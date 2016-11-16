@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Dojo Secrets - Home</title>
+    </head>
+    <body>
+        <h3>Hello, {{name}}!</h3>
+        <form action="{% url 'secret_add' user_id %}" method="post">
+            {% csrf_token %}
+            <textarea name="secret" rows="8" cols="40"></textarea>
+            <input type="submit" name="submit" value="Post">
+        </form>
+        <h3>Recent secrets</h3>
+        {% if secrets %}
+            {% for secret in secrets %}
+                {{secret.secret}}
+                {% for key, value in secret_dict.items %}
+                    {% if key == secret.pk %}
+                        {{value}} likes
+                    {% endif %}
+                {% endfor %}
+                {% for key, value in liker_dict.items %}
+                    {% if key == secret.pk %}
+                        {% if name in value %}
+                            <i> You liked this! </i>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% if secret.user.pk == user_id %}
+                    <i>You posted this!</i>
+                {% endif %}
+                <form action="{% url 'like' user_id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="secret_id" value="{{secret.pk}}">
+                    <input type="submit" name="submit" value="Like">
+                </form>
+            {% endfor %}
+        {% endif %}
+    </body>
+</html>
